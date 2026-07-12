@@ -122,11 +122,11 @@
       background:linear-gradient(135deg,rgba(74,212,127,.18),rgba(159,120,255,.16));
     }
     .scratch-reveal{
-      position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:20px;
+      position:absolute;inset:0;z-index:1;display:grid;place-items:center;text-align:center;padding:20px;
     }
     .scratch-reveal h4{margin:0 0 6px;font-size:1.4rem}
     .scratch-reveal p{margin:0;color:var(--muted)}
-    #scratchCanvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none}
+    #scratchCanvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none;z-index:2;cursor:crosshair}
 
     .place-card h4{margin:8px 0 4px;font-size:1.25rem}
     .place-card p{margin:0;color:var(--muted)}
@@ -241,6 +241,24 @@
       .player h2{font-size:1rem}
     }
 
+
+#confettiCanvas{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:100;display:none}
+.calendar-top{display:grid;grid-template-columns:52px 1fr 52px;align-items:center;gap:10px;text-align:center;margin-bottom:14px}
+.calendar-top h3{margin:0;font-size:1.35rem}
+.calendar-nav{width:48px;height:48px;border-radius:15px;background:var(--panel2);color:var(--text);font-size:2rem;border:1px solid var(--line)}
+.workout-legend{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;color:var(--muted);font-size:.82rem;margin-bottom:14px}
+.workout-dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px}
+.workout-dot.none{background:var(--bad)} .workout-dot.once{background:#f4a340} .workout-dot.twice{background:var(--good)}
+.weekday-row,.workout-calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:7px}
+.weekday-row{margin-bottom:7px;color:var(--muted);font-size:.78rem;text-align:center}
+.workout-day{min-height:44px;aspect-ratio:1;border-radius:14px;display:grid;place-items:center;font-weight:800;font-size:.92rem;border:1px solid rgba(255,255,255,.12)}
+.workout-day.none{background:rgba(255,99,120,.22);color:#ffd7dd}
+.workout-day.once{background:rgba(244,163,64,.28);color:#ffe2b7}
+.workout-day.twice{background:rgba(74,212,127,.34);color:#d8ffe7}
+.workout-day.future{background:var(--panel2);color:#666;border-color:var(--line)}
+.workout-day.today{outline:3px solid var(--accent)}
+.workout-day.empty{visibility:hidden}
+
     @media(min-width:640px){
       .habit-grid{grid-template-columns:repeat(3,1fr)}
       .stat-grid{grid-template-columns:repeat(4,1fr)}
@@ -282,22 +300,21 @@
         <div class="quick-controls">
           <div>
             <select id="plusAction" aria-label="Add points action">
-              <option value="20|Workout">Workout +20</option>
-              <option value="15|10k Steps">10k Steps +15</option>
-              <option value="10|Cooked at Home">Cooked at Home +10</option>
-              <option value="10|Had fun">Had fun +10</option>
-              <option value="10|Drank Enough Water">Water Goal +10</option>
-            </select>
+<option value="150|Workout">Workout +150</option>
+<option value="100|10k Steps">10k Steps +100</option>
+<option value="50|Cooked at Home">Cooked at Home +50</option>
+<option value="30|Had Fun">Had Fun +30</option>
+<option value="10|Water Goal">Water Goal +10</option>
+</select>
             <button class="quick-btn plus" id="quickPlus" style="width:100%;margin-top:8px">＋ Add</button>
           </div>
           <div>
             <select id="minusAction" aria-label="Remove points action">
-              <option value="15|Ordered Instead of Cooking">Ordered Instead of Cooking −15</option>
-              <option value="20|Smoking">Smoking −20</option>
-              <option value="10|Skipped Workout">Skipped Workout −10</option>
-              <option value="10|Overspent">Overspent −10</option>
-              <option value="10|Late Night Junk Food">Late Night Junk Food −10</option>
-            </select>
+<option value="50|Ordered Food">Ordered Food −50</option>
+<option value="200|Smoking">Smoking −200</option>
+<option value="150|Skipped Workout">Skipped Workout −150</option>
+<option value="5|Late Night Junk Food">Late Night Junk Food −5</option>
+</select>
             <button class="quick-btn minus" id="quickMinus" style="width:100%;margin-top:8px">− Minus</button>
           </div>
         </div>
@@ -320,7 +337,7 @@
           </div>
           <canvas id="scratchCanvas"></canvas>
         </div>
-        <button class="btn full" id="newScratch" style="margin-top:10px">Load Unlocked Card</button>
+        <button class="btn full" id="newScratch" style="margin-top:10px">Prepare Scratch Card</button>
       </section>
 
       <section class="section">
@@ -334,7 +351,7 @@
     </section>
 <section id="grocery" class="view">
       <header class="topbar">
-        <div class="brand"><h1>Groceries</h1><p>Plan, track, and understand every rupee.</p></div>
+        <div class="brand"><h1>Groceries</h1><p>Monthly grocery budget: ₹2,000.</p></div>
         <div class="mini-date" id="groceryMonthLabel">This month</div>
       </header>
 
@@ -358,10 +375,7 @@
           </select>
           <input id="groceryAmount" type="number" min="0" inputmode="decimal" placeholder="Amount ₹">
         </div>
-        <div class="input-row" style="grid-template-columns:1fr 1fr">
-          <input id="groceryNote" placeholder="What did you buy?">
-          <input id="monthlyBudget" type="number" min="0" inputmode="decimal" placeholder="Monthly budget ₹">
-        </div>
+        
         <button class="btn full" id="addExpense" style="margin-top:10px">Add Expense</button>
       </section>
 
@@ -391,6 +405,24 @@
       </section>
 
       <section class="section">
+        <div class="calendar-top">
+          <button class="calendar-nav" id="prevMonth">‹</button>
+          <div><h3 id="workoutCalendarTitle"></h3><span>Workout consistency</span></div>
+          <button class="calendar-nav" id="nextMonth">›</button>
+        </div>
+        <div class="workout-legend">
+          <span><i class="workout-dot none"></i>No workout</span>
+          <span><i class="workout-dot once"></i>1 workout</span>
+          <span><i class="workout-dot twice"></i>2+ workouts</span>
+        </div>
+        <div class="weekday-row"><span>Su</span><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span></div>
+        <div class="workout-calendar" id="workoutCalendar"></div>
+        <div class="stat-grid" style="margin-top:16px">
+          <div class="stat-card"><span>Current Green Streak</span><strong id="greenStreak">0</strong></div>
+          <div class="stat-card"><span>Best Green Streak</span><strong id="bestGreenStreak">0</strong></div>
+        </div>
+      </section>
+      <section class="section">
         <div class="section-header"><h3>Monthly Grocery Split</h3><span>Pie chart</span></div>
         <div class="chart-wrap">
           <div class="pie" id="pieChart"></div>
@@ -416,19 +448,19 @@
     <button class="nav-btn" data-view="dashboard"><span>◔</span>Dashboard</button>
   </nav>
 
-  <div class="toast" id="toast"></div>
+  <canvas id="confettiCanvas"></canvas><div class="toast" id="toast"></div>
 
 <script>
 const defaults={
-  life:0,places:[],visited:[],cards:0,currentReveal:null,minusLog:[],
-  groceries:{Vegetables:0,Fruits:0,Eggs:0,Water:0,Milk:0,Masti:0},purchases:[],monthlyBudget:0,
+  life:0,places:[],visited:[],cards:0,currentReveal:null,minusLog:[],workoutCounts:{},calendarOffset:0,
+  groceries:{Vegetables:0,Fruits:0,Eggs:0,Water:0,Milk:0,Masti:0},purchases:[],monthlyBudget:2000,
   activity:[{text:"Two Player Mode started",value:0,time:"Now"}]
 };
-let state=JSON.parse(localStorage.getItem("twoPlayerModeFreshStart"))||defaults;
+let state=JSON.parse(localStorage.getItem("twoPlayerModeScratchFixed2026"))||defaults;
 const $=id=>document.getElementById(id);
 const colors={Vegetables:"#9f78ff",Fruits:"#ff7abc",Eggs:"#ffd166",Water:"#4ad47f",Milk:"#57b8ff",Masti:"#ff8f4d"};
 
-function save(){localStorage.setItem("twoPlayerModeFreshStart",JSON.stringify(state))}
+function save(){localStorage.setItem("twoPlayerModeScratchFixed2026",JSON.stringify(state))}
 function toast(msg){$("toast").textContent=msg;$("toast").classList.add("show");setTimeout(()=>$("toast").classList.remove("show"),1700)}
 function log(text,value=0){
   const now=new Date();
@@ -439,6 +471,17 @@ function log(text,value=0){
   });
   state.activity=state.activity.slice(0,25);
 }
+
+function todayKey(){
+  const d=new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+}
+function recordWorkout(){
+  state.workoutCounts=state.workoutCounts||{};
+  const key=todayKey();
+  state.workoutCounts[key]=(state.workoutCounts[key]||0)+1;
+}
+
 function changeLife(amount,reason){
   const before=state.life;
   state.life=Math.max(0,state.life+amount);
@@ -447,8 +490,10 @@ function changeLife(amount,reason){
     state.cards=(state.cards||0)+1;
     state.life=0;
     state.currentReveal=null;
-    log("Kithe? card unlocked",0);
-    toast("Table for Two unlocked!");
+    log("Scratch card unlocked",0);
+    launchConfetti();
+    prepareScratchCard(true);
+    toast("Scratch card unlocked — open Kithe? and scratch it!");
   } else {
     toast(`${amount>0?"+":""}${amount} life`);
   }
@@ -465,12 +510,11 @@ function lifeStatus(){
 }
 function renderGrocery(){
   state.purchases=state.purchases||[];
-  state.monthlyBudget=Number(state.monthlyBudget||0);
+  state.monthlyBudget=2000;
   const total=Object.values(state.groceries).reduce((a,b)=>a+Number(b),0);
   $("groceryTotal").textContent=total.toFixed(0);
   $("dashSpend").textContent=total.toFixed(0);
-  $("monthlyBudget").value=state.monthlyBudget||"";
-  $("groceryMonthLabel").textContent=new Date().toLocaleDateString([],{month:"long",year:"numeric"});
+    $("groceryMonthLabel").textContent=new Date().toLocaleDateString([],{month:"long",year:"numeric"});
 
   const maxCategory=Math.max(1,...Object.values(state.groceries).map(Number));
   $("groceryList").innerHTML=Object.entries(state.groceries).map(([k,v])=>`
@@ -483,13 +527,11 @@ function renderGrocery(){
   const pct=state.monthlyBudget?Math.min(100,Math.round(total/state.monthlyBudget*100)):0;
   $("budgetPercent").textContent=`${pct}%`;
   $("budgetRing").style.background=`conic-gradient(var(--accent) ${pct}%,#252533 ${pct}% 100%)`;
-  $("groceryInsight").textContent=state.monthlyBudget
-    ? `₹${Math.max(0,state.monthlyBudget-total).toFixed(0)} left from ₹${state.monthlyBudget.toFixed(0)}`
-    : "Set a monthly budget to track what remains.";
+  $("groceryInsight").textContent=`₹${Math.max(0,2000-total).toFixed(0)} left from ₹2,000`;
 
   $("purchaseList").innerHTML=state.purchases.length?state.purchases.slice(0,10).map(p=>`
     <div class="history-item">
-      <div><strong>${p.note||p.category}</strong><br><small>${p.category} · ${p.time}</small></div>
+      <div><strong>${p.category}</strong><br><small>${p.category} · ${p.time}</small></div>
       <strong>₹${Number(p.amount).toFixed(0)}</strong>
     </div>`).join(""):`<div class="history-item"><span>No purchases yet</span></div>`;
 
@@ -623,6 +665,56 @@ function syncCurrentReveal(){
   }
 }
 
+
+function renderWorkoutCalendar(){
+  state.workoutCounts=state.workoutCounts||{};
+  state.calendarOffset=Number(state.calendarOffset||0);
+  const base=new Date();
+  const shown=new Date(base.getFullYear(),base.getMonth()+state.calendarOffset,1);
+  const year=shown.getFullYear(),month=shown.getMonth();
+  const days=new Date(year,month+1,0).getDate();
+  const start=new Date(year,month,1).getDay();
+  const today=new Date();
+  $("workoutCalendarTitle").textContent=shown.toLocaleDateString([],{month:"long",year:"numeric"});
+  let out="";
+  for(let i=0;i<start;i++)out+=`<div class="workout-day empty"></div>`;
+  for(let day=1;day<=days;day++){
+    const key=`${year}-${String(month+1).padStart(2,"0")}-${String(day).padStart(2,"0")}`;
+    const count=state.workoutCounts[key]||0;
+    const date=new Date(year,month,day);
+    const future=date>new Date(today.getFullYear(),today.getMonth(),today.getDate());
+    const cls=future?"future":count>=2?"twice":count===1?"once":"none";
+    const isToday=year===today.getFullYear()&&month===today.getMonth()&&day===today.getDate();
+    out+=`<div class="workout-day ${cls}${isToday?" today":""}">${day}</div>`;
+  }
+  $("workoutCalendar").innerHTML=out;
+
+  let running=0,best=0;
+  const startDate=new Date(today); startDate.setDate(startDate.getDate()-365);
+  for(let d=new Date(startDate);d<=today;d.setDate(d.getDate()+1)){
+    const key=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+    if((state.workoutCounts[key]||0)>=2){running++;best=Math.max(best,running)} else running=0;
+  }
+  $("greenStreak").textContent=running;
+  $("bestGreenStreak").textContent=best;
+}
+$("prevMonth").onclick=()=>{state.calendarOffset=(state.calendarOffset||0)-1;renderWorkoutCalendar();save()};
+$("nextMonth").onclick=()=>{state.calendarOffset=(state.calendarOffset||0)+1;renderWorkoutCalendar();save()};
+
+function launchConfetti(){
+  const canvas=$("confettiCanvas"),ctx=canvas.getContext("2d"),dpr=window.devicePixelRatio||1;
+  canvas.width=innerWidth*dpr; canvas.height=innerHeight*dpr; canvas.style.display="block";
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  const pieces=Array.from({length:180},()=>({x:Math.random()*innerWidth,y:-20-Math.random()*innerHeight*.35,vx:(Math.random()-.5)*5,vy:3+Math.random()*6,size:6+Math.random()*8,rot:Math.random()*Math.PI,spin:(Math.random()-.5)*.25,hue:Math.random()*360}));
+  const start=performance.now();
+  function frame(now){
+    ctx.clearRect(0,0,innerWidth,innerHeight);
+    pieces.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.rot+=p.spin;ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.rot);ctx.fillStyle=`hsl(${p.hue} 90% 60%)`;ctx.fillRect(-p.size/2,-p.size/2,p.size,p.size*.65);ctx.restore()});
+    if(now-start<3200)requestAnimationFrame(frame); else {canvas.style.display="none";ctx.clearRect(0,0,innerWidth,innerHeight)}
+  }
+  requestAnimationFrame(frame);
+}
+
 function render(){
   state.cards=state.cards||0;
   syncCurrentReveal();
@@ -636,23 +728,32 @@ function render(){
 
   if(state.currentReveal){
     $("scratchTitle").textContent=state.currentReveal;
-    $("scratchText").textContent="Scratch away the grey layer to reveal.";
+    $("scratchText").textContent="";
   } else if(state.cards>0){
     $("scratchTitle").textContent="Card Ready";
-    $("scratchText").textContent="Tap Load Unlocked Card, then scratch.";
+    $("scratchText").textContent="Tap Prepare Scratch Card, then scratch.";
   } else {
     $("scratchTitle").textContent="Locked";
     $("scratchText").textContent="Max the Life Meter to earn a Kithe? card.";
   }
-  renderGrocery();renderPlaces();renderDashboardExtras();renderActivity();save();
+  renderGrocery();renderPlaces();renderDashboardExtras();renderWorkoutCalendar();renderActivity();save();
 }
 document.querySelectorAll(".nav-btn").forEach(btn=>btn.onclick=()=>{
   document.querySelectorAll(".nav-btn").forEach(x=>x.classList.remove("active"));
   document.querySelectorAll(".view").forEach(x=>x.classList.remove("active"));
-  btn.classList.add("active");$(btn.dataset.view).classList.add("active");window.scrollTo({top:0,behavior:"smooth"});
+  btn.classList.add("active");
+  $(btn.dataset.view).classList.add("active");
+  window.scrollTo({top:0,behavior:"smooth"});
+
+  if(btn.dataset.view==="table2"){
+    requestAnimationFrame(()=>{
+      requestAnimationFrame(sizeScratch);
+    });
+  }
 });
 $("quickPlus").onclick=()=>{
   const [points,label]=$("plusAction").value.split("|");
+  if(label==="Workout")recordWorkout();
   changeLife(Number(points),label);
 };
 $("quickMinus").onclick=()=>{
@@ -675,10 +776,19 @@ const canvas=$("scratchCanvas"),ctx=canvas.getContext("2d");
 let scratching=false,lastX=0,lastY=0;
 
 function sizeScratch(){
-  const rect=$("scratchShell").getBoundingClientRect();
-  canvas.width=Math.max(1,Math.floor(rect.width*devicePixelRatio));
-  canvas.height=Math.max(1,Math.floor(rect.height*devicePixelRatio));
-  ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
+  const shell=$("scratchShell");
+  if(!shell)return;
+  const rect=shell.getBoundingClientRect();
+
+  // The Table for 2 tab may be hidden. Wait until it is visible.
+  if(rect.width<20 || rect.height<20)return;
+
+  const dpr=window.devicePixelRatio||1;
+  canvas.width=Math.max(1,Math.floor(rect.width*dpr));
+  canvas.height=Math.max(1,Math.floor(rect.height*dpr));
+  canvas.style.width=`${rect.width}px`;
+  canvas.style.height=`${rect.height}px`;
+  ctx.setTransform(dpr,0,0,dpr,0,0);
   drawScratchCover();
 }
 function drawScratchCover(){
@@ -691,27 +801,55 @@ function drawScratchCover(){
   ctx.fillStyle="#f3f3f3";
   ctx.font="800 20px system-ui";
   ctx.textAlign="center";
-  ctx.fillText((state.cards||0)>0||state.currentReveal?"SCRATCH HERE":"LOCKED",w/2,h/2);
+  ctx.fillText(state.currentReveal?"SCRATCH HERE":((state.cards||0)>0?"CARD READY":"LOCKED"),w/2,h/2);
 }
 function point(e){
-  const r=canvas.getBoundingClientRect(),p=e.touches?e.touches[0]:e;
+  const r=canvas.getBoundingClientRect();
+  const p=(e.touches&&e.touches[0])?e.touches[0]:e;
   return {x:p.clientX-r.left,y:p.clientY-r.top};
 }
 function scratchAt(x,y){
   ctx.globalCompositeOperation="destination-out";
   ctx.beginPath();ctx.arc(x,y,24,0,Math.PI*2);ctx.fill();
 }
-canvas.addEventListener("pointerdown",e=>{if(!state.currentReveal)return;scratching=true;const p=point(e);lastX=p.x;lastY=p.y;scratchAt(p.x,p.y)});
-canvas.addEventListener("pointermove",e=>{if(!scratching||!state.currentReveal)return;const p=point(e);ctx.globalCompositeOperation="destination-out";ctx.lineWidth=48;ctx.lineCap="round";ctx.beginPath();ctx.moveTo(lastX,lastY);ctx.lineTo(p.x,p.y);ctx.stroke();lastX=p.x;lastY=p.y});
-window.addEventListener("pointerup",()=>scratching=false);
+canvas.addEventListener("pointerdown",e=>{
+  if(!state.currentReveal)return;
+  e.preventDefault();
+  scratching=true;
+  canvas.setPointerCapture?.(e.pointerId);
+  const p=point(e);
+  lastX=p.x;lastY=p.y;
+  scratchAt(p.x,p.y);
+});
+canvas.addEventListener("pointermove",e=>{
+  if(!scratching||!state.currentReveal)return;
+  e.preventDefault();
+  const p=point(e);
+  ctx.globalCompositeOperation="destination-out";
+  ctx.lineWidth=56;
+  ctx.lineCap="round";
+  ctx.lineJoin="round";
+  ctx.beginPath();
+  ctx.moveTo(lastX,lastY);
+  ctx.lineTo(p.x,p.y);
+  ctx.stroke();
+  lastX=p.x;lastY=p.y;
+});
+canvas.addEventListener("pointerup",e=>{
+  scratching=false;
+  canvas.releasePointerCapture?.(e.pointerId);
+});
+canvas.addEventListener("pointercancel",()=>scratching=false);
 
-$("newScratch").onclick=()=>{
+function prepareScratchCard(auto=false){
   if(state.currentReveal){
-    toast("Scratch the current card");
+    requestAnimationFrame(sizeScratch);
+    if(!auto)toast("Your scratch card is ready");
     return;
   }
+
   if((state.cards||0)<1){
-    toast("Fill the Life Meter first");
+    if(!auto)toast("Reach 1,000 Life to unlock a scratch card");
     return;
   }
 
@@ -725,7 +863,7 @@ $("newScratch").onclick=()=>{
     .filter(item=>!item.place.done);
 
   if(!available.length){
-    toast("Add an unvisited place first");
+    if(!auto)toast("Add an unticked place first");
     return;
   }
 
@@ -734,33 +872,39 @@ $("newScratch").onclick=()=>{
   state.cards--;
 
   $("scratchTitle").textContent=state.currentReveal;
-  $("scratchText").textContent="Scratch away the grey layer to reveal.";
-  drawScratchCover();
-  log("Kithe? card loaded");
-  render();
-};
+  $("scratchText").textContent="";
+  log("Scratch card prepared");
+  save();
+
+  // Wait until the tab/card has a real size before drawing the grey cover.
+  requestAnimationFrame(()=>{
+    requestAnimationFrame(sizeScratch);
+  });
+}
+
+$("newScratch").onclick=()=>prepareScratchCard(false);
 
 window.addEventListener("resize",sizeScratch);
 setTimeout(sizeScratch,0);
 $("addExpense").onclick=()=>{
   const c=$("groceryCategory").value;
   const a=Number($("groceryAmount").value);
-  const note=$("groceryNote").value.trim();
-  const budget=Number($("monthlyBudget").value);
   if(!a||a<=0)return toast("Enter a valid amount");
-  state.monthlyBudget=budget||state.monthlyBudget||0;
+  state.monthlyBudget=2000;
   state.groceries[c]+=a;
   state.purchases=state.purchases||[];
-  state.purchases.unshift({category:c,amount:a,note,time:new Date().toLocaleString()});
+  state.purchases.unshift({category:c,amount:a,time:new Date().toLocaleString()});
   state.purchases=state.purchases.slice(0,40);
   $("groceryAmount").value="";
-  $("groceryNote").value="";
   log(`${c} expense ₹${a.toFixed(0)}`);
   render();
   toast("Expense added");
 };
 $("todayDate").textContent=new Date().toLocaleDateString([],{weekday:"short",month:"short",day:"numeric"});
 render();
+if((state.cards||0)>0 && !state.currentReveal){
+  prepareScratchCard(true);
+}
 </script>
 </body>
 </html>
