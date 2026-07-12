@@ -147,6 +147,16 @@
     .history{display:grid;gap:9px}
     .history-item{display:flex;justify-content:space-between;gap:12px;padding:12px;border-radius:15px;background:var(--panel2);border:1px solid var(--line)}
     .history-item small{color:var(--muted)}
+
+    .place-done{
+      background:rgba(74,212,127,.10);
+      border-color:rgba(74,212,127,.35);
+    }
+    .place-done strong{
+      text-decoration:line-through;
+      opacity:.78;
+    }
+
     .bottom-nav{
       position:fixed;left:50%;bottom:10px;transform:translateX(-50%);
       width:min(calc(100% - 20px),730px);display:grid;grid-template-columns:repeat(4,1fr);gap:7px;
@@ -265,9 +275,9 @@
 
       <section class="hero">
         <div class="hero-label">Life Meter</div>
-        <div class="life-number"><span id="lifePoints">500</span><small> / 1000</small></div>
+        <div class="life-number"><span id="lifePoints">0</span><small> / 1000</small></div>
         <div class="life-track"><div class="life-fill" id="lifeFill"></div></div>
-        <div class="life-caption"><span>Low</span><span id="lifeStatus">Doing good</span><span>Maxed</span></div>
+        <div class="life-caption"><span>Low</span><span id="lifeStatus">Critical</span><span>Maxed</span></div>
 
         <div class="quick-controls">
           <div>
@@ -373,7 +383,7 @@
 
       <section class="section">
         <div class="stat-grid">
-          <div class="stat-card"><span>Life</span><strong id="dashLife">500</strong></div>
+          <div class="stat-card"><span>Life</span><strong id="dashLife">0</strong></div>
           <div class="stat-card"><span>Saved Places</span><strong id="dashSaved">0</strong></div>
           <div class="stat-card"><span>Places Visited</span><strong id="dashVisited">0</strong></div>
           <div class="stat-card"><span>Monthly Spend</span><strong>₹<span id="dashSpend">0</span></strong></div>
@@ -410,15 +420,15 @@
 
 <script>
 const defaults={
-  life:500,places:[],visited:[],cards:0,currentReveal:null,minusLog:[],
+  life:0,places:[],visited:[],cards:0,currentReveal:null,minusLog:[],
   groceries:{Vegetables:0,Fruits:0,Eggs:0,Water:0,Milk:0,Masti:0},purchases:[],monthlyBudget:0,
   activity:[{text:"Two Player Mode started",value:0,time:"Now"}]
 };
-let state=JSON.parse(localStorage.getItem("twoPlayerModeV2"))||defaults;
+let state=JSON.parse(localStorage.getItem("twoPlayerModeFreshStart"))||defaults;
 const $=id=>document.getElementById(id);
 const colors={Vegetables:"#9f78ff",Fruits:"#ff7abc",Eggs:"#ffd166",Water:"#4ad47f",Milk:"#57b8ff",Masti:"#ff8f4d"};
 
-function save(){localStorage.setItem("twoPlayerModeV2",JSON.stringify(state))}
+function save(){localStorage.setItem("twoPlayerModeFreshStart",JSON.stringify(state))}
 function toast(msg){$("toast").textContent=msg;$("toast").classList.add("show");setTimeout(()=>$("toast").classList.remove("show"),1700)}
 function log(text,value=0){
   const now=new Date();
@@ -491,18 +501,65 @@ function renderGrocery(){
     <div class="legend-row"><span>${k}</span><strong>₹${Number(v).toFixed(0)}</strong></div>`).join("");
 }
 function renderPlaces(){
-  $("placeCount").textContent=`${state.places.length} place${state.places.length===1?"":"s"}`;
+  // Migrate any old string-only places into objects.
+  state.places=(state.places||[]).map(place=>{
+    if(typeof place==="string"){
+      return {name:place,done:false,completedDate:null};
+    }
+    return {
+      name:place.name||"Unnamed place",
+      done:Boolean(place.done),
+      completedDate:place.completedDate||null
+    };
+  });
+
+  const completed=state.places.filter(place=>place.done).length;
+  $("placeCount").textContent=`${state.places.length} place${state.places.length===1?"":"s"} · ${completed} done`;
   $("dashSaved").textContent=state.places.length;
-  $("dashVisited").textContent=state.visited.length;
-  $("placeList").innerHTML=state.places.length?state.places.map((name,i)=>`
-    <label class="history-item" style="align-items:center">
-      <span>${name}</span>
-      <input type="checkbox" data-place-index="${i}" style="width:22px;height:22px">
-    </label>`).join(""):`<div class="history-item"><span>No places added yet</span></div>`;
-  document.querySelectorAll("[data-place-index]").forEach(cb=>cb.onchange=()=>{
-    const i=Number(cb.dataset.placeIndex),name=state.places.splice(i,1)[0];
-    state.visited.unshift({name,date:new Date().toLocaleDateString()});
-    changeLife(25,`Completed date: ${name}`);
+  $("dashVisited").textContent=completed;
+
+  $("placeList").innerHTML=state.places.length
+    ? state.places.map((place,i)=>`
+      <label class="history-item ${place.done?"place-done":""}" style="align-items:center">
+        <div>
+          <strong>${place.name}</strong>
+          ${place.done
+            ? `<br><small>Completed${place.completedDate?` · ${place.completedDate}`:""}</small>`
+            : `<br><small>Not visited yet</small>`}
+        </div>
+        <input
+          type="checkbox"
+          data-place-index="${i}"
+          ${place.done?"checked":""}
+          style="width:26px;height:26px;accent-color:var(--good)"
+        >
+      </label>
+    `).join("")
+    : `<div class="history-item"><span>No places added yet</span></div>`;
+
+  document.querySelectorAll("[data-place-index]").forEach(cb=>{
+    cb.onchange=()=>{
+      const i=Number(cb.dataset.placeIndex);
+      const place=state.places[i];
+      if(!place)return;
+
+      if(cb.checked && !place.done){
+        place.done=true;
+        place.completedDate=new Date().toLocaleDateString();
+        if(!state.visited.some(v=>v.name===place.name)){
+          state.visited.unshift({
+            name:place.name,
+            date:place.completedDate
+          });
+        }
+        changeLife(25,`Completed date: ${place.name}`);
+      } else if(!cb.checked && place.done){
+        place.done=false;
+        place.completedDate=null;
+        log(`Marked incomplete: ${place.name}`,0);
+        render();
+      }
+    };
   });
 }
 function renderActivity(){
@@ -512,8 +569,6 @@ function renderActivity(){
 }
 function renderDashboardExtras(){
   state.minusLog=state.minusLog||[];
-  $("dashCards").textContent=state.cards||0;
-  $("dashDates").textContent=state.visited.length;
   $("minusList").innerHTML=state.minusLog.length?state.minusLog.slice(0,8).map(x=>`
     <div class="history-item"><div><strong>${x.text}</strong><br><small>${x.time}</small></div>
     <strong style="color:var(--bad)">${x.value}</strong></div>`).join("")
@@ -556,8 +611,21 @@ function renderCalendar(){
   $("bestStreak").textContent=best;
 }
 
+
+function syncCurrentReveal(){
+  if(!state.currentReveal)return;
+  const found=(state.places||[]).find(place=>{
+    const p=typeof place==="string"?{name:place,done:false}:place;
+    return p.name===state.currentReveal;
+  });
+  if(found && found.done){
+    state.currentReveal=null;
+  }
+}
+
 function render(){
   state.cards=state.cards||0;
+  syncCurrentReveal();
   $("lifePoints").textContent=state.life;
   $("lifeFill").style.width=`${state.life/10}%`;
   $("lifeStatus").textContent=lifeStatus();
@@ -576,7 +644,7 @@ function render(){
     $("scratchTitle").textContent="Locked";
     $("scratchText").textContent="Max the Life Meter to earn a Kithe? card.";
   }
-  renderGrocery();renderPlaces();renderDashboardExtras();renderCalendar();renderActivity();save();
+  renderGrocery();renderPlaces();renderDashboardExtras();renderActivity();save();
 }
 document.querySelectorAll(".nav-btn").forEach(btn=>btn.onclick=()=>{
   document.querySelectorAll(".nav-btn").forEach(x=>x.classList.remove("active"));
@@ -596,7 +664,11 @@ $("quickMinus").onclick=()=>{
 };
 $("addPlace").onclick=()=>{
   const v=$("placeInput").value.trim();if(!v)return toast("Add a place first");
-  state.places.push(v);$("placeInput").value="";log(`Saved place: ${v}`);render();toast("Place saved");
+  state.places.push({name:v,done:false,completedDate:null});
+  $("placeInput").value="";
+  log(`Saved place: ${v}`);
+  render();
+  toast("Place saved");
 };
 
 const canvas=$("scratchCanvas"),ctx=canvas.getContext("2d");
@@ -634,16 +706,37 @@ canvas.addEventListener("pointermove",e=>{if(!scratching||!state.currentReveal)r
 window.addEventListener("pointerup",()=>scratching=false);
 
 $("newScratch").onclick=()=>{
-  if(state.currentReveal){toast("Scratch the current card");return}
-  if((state.cards||0)<1)return toast("Fill the Life Meter first");
-  if(!state.places.length)return toast("Add at least one place");
-  const i=Math.floor(Math.random()*state.places.length);
-  state.currentReveal=state.places[i];
+  if(state.currentReveal){
+    toast("Scratch the current card");
+    return;
+  }
+  if((state.cards||0)<1){
+    toast("Fill the Life Meter first");
+    return;
+  }
+
+  const available=(state.places||[])
+    .map((place,index)=>({
+      index,
+      place:typeof place==="string"
+        ? {name:place,done:false,completedDate:null}
+        : place
+    }))
+    .filter(item=>!item.place.done);
+
+  if(!available.length){
+    toast("Add an unvisited place first");
+    return;
+  }
+
+  const picked=available[Math.floor(Math.random()*available.length)];
+  state.currentReveal=picked.place.name;
   state.cards--;
+
   $("scratchTitle").textContent=state.currentReveal;
   $("scratchText").textContent="Scratch away the grey layer to reveal.";
   drawScratchCover();
-  log(`Kithe? card loaded`);
+  log("Kithe? card loaded");
   render();
 };
 
