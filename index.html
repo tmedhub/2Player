@@ -3,743 +3,513 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#0b0b12" />
+  <meta name="theme-color" content="#090910" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
   <title>Two Player Mode</title>
   <style>
-    :root {
-      --bg: #0b0b12;
-      --panel: #151522;
-      --panel-2: #1c1c2d;
-      --text: #f7f7fb;
-      --muted: #a8a8bd;
-      --accent: #a970ff;
-      --accent-2: #ff79c6;
-      --good: #49d17d;
-      --bad: #ff5d73;
-      --gold: #ffd166;
-      --line: rgba(255,255,255,.08);
-      --shadow: 0 14px 40px rgba(0,0,0,.35);
-      --radius: 22px;
+    :root{
+      --bg:#090910;
+      --panel:#151520;
+      --panel2:#1c1c29;
+      --text:#f8f8fc;
+      --muted:#a8a8bb;
+      --accent:#9f78ff;
+      --accent2:#ff7abc;
+      --good:#4ad47f;
+      --bad:#ff6378;
+      --gold:#ffd166;
+      --line:rgba(255,255,255,.08);
+      --shadow:0 18px 50px rgba(0,0,0,.38);
+      --radius:24px;
     }
-
-    * { box-sizing: border-box; }
-
-    html { scroll-behavior: smooth; }
-
-    body {
-      margin: 0;
-      min-height: 100vh;
-      font-family: Inter, ui-rounded, "SF Pro Rounded", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      color: var(--text);
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      min-height:100vh;
+      color:var(--text);
+      font-family:Inter,ui-rounded,"SF Pro Rounded",system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
       background:
-        radial-gradient(circle at top left, rgba(169,112,255,.14), transparent 32%),
-        radial-gradient(circle at top right, rgba(255,121,198,.10), transparent 28%),
+        radial-gradient(circle at 8% 0%,rgba(159,120,255,.15),transparent 28%),
+        radial-gradient(circle at 90% 5%,rgba(255,122,188,.12),transparent 25%),
         var(--bg);
-      padding-bottom: calc(96px + env(safe-area-inset-bottom));
+      padding-bottom:calc(96px + env(safe-area-inset-bottom));
+    }
+    button,input,select{font:inherit}
+    button{cursor:pointer;border:0}
+    .app{width:min(100%,760px);margin:auto;padding:18px 16px 30px}
+    .view{display:none}
+    .view.active{display:block}
+    .topbar{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:18px}
+    .brand h1{margin:0;font-size:clamp(1.5rem,5vw,2.2rem);letter-spacing:-.04em}
+    .brand p{margin:5px 0 0;color:var(--muted);font-size:.92rem}
+    .mini-date{color:var(--muted);font-size:.85rem;text-align:right}
+    .duo{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px}
+    .player{
+      text-align:center;padding:16px;border-radius:var(--radius);
+      background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.025));
+      border:1px solid var(--line);box-shadow:var(--shadow)
+    }
+    .player img{
+      width:min(35vw,145px);height:min(35vw,145px);object-fit:contain;display:block;margin:0 auto 8px;
+      filter:drop-shadow(0 12px 18px rgba(0,0,0,.35))
+    }
+    .player h2{margin:0;font-size:1.08rem}
+    .hero,.section{
+      border-radius:var(--radius);background:rgba(21,21,32,.94);
+      border:1px solid var(--line);box-shadow:var(--shadow)
+    }
+    .hero{padding:24px 20px}
+    .hero-label{color:var(--muted);font-size:.86rem;text-transform:uppercase;letter-spacing:.12em}
+    .life-number{font-size:clamp(3rem,16vw,5.6rem);line-height:1;font-weight:950;margin:12px 0 6px;letter-spacing:-.06em}
+    .life-number small{font-size:.28em;color:var(--muted);letter-spacing:0}
+    .life-track{height:28px;border-radius:999px;overflow:hidden;background:#0d0d15;border:1px solid var(--line);margin:16px 0 10px}
+    .life-fill{height:100%;width:50%;border-radius:inherit;background:linear-gradient(90deg,var(--bad),var(--gold),var(--good));transition:width .35s ease}
+    .life-caption{display:flex;justify-content:space-between;color:var(--muted);font-size:.8rem}
+    .quick-controls{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:20px}
+    .quick-btn{
+      min-height:66px;border-radius:20px;color:white;font-size:1.3rem;font-weight:900;
+      display:flex;align-items:center;justify-content:center;gap:10px
+    }
+    .quick-btn.plus{background:linear-gradient(135deg,#2eae66,#4ad47f);box-shadow:0 10px 25px rgba(74,212,127,.18)}
+    .quick-btn.minus{background:linear-gradient(135deg,#d53b56,#ff6378);box-shadow:0 10px 25px rgba(255,99,120,.18)}
+    .section{padding:18px;margin-top:16px}
+    .section-header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+    .section-header h3{margin:0;font-size:1.08rem}
+    .section-header span{color:var(--muted);font-size:.86rem}
+    .habit-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+    .habit{
+      padding:14px;border-radius:17px;background:var(--panel2);border:1px solid var(--line);
+      color:var(--text);text-align:left
+    }
+    .habit.done{background:rgba(74,212,127,.12);border-color:rgba(74,212,127,.46)}
+    .habit strong{display:block;font-size:.92rem}
+    .habit small{color:var(--muted)}
+    .btn{
+      padding:13px 15px;border-radius:16px;font-weight:850;color:white;
+      background:linear-gradient(135deg,var(--accent),#7e59e9)
+    }
+    .btn.secondary{background:var(--panel2);border:1px solid var(--line)}
+    .btn.danger{background:linear-gradient(135deg,#ff6378,#cf3552)}
+    .btn.full{width:100%}
+    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .input-row{display:grid;grid-template-columns:1fr auto;gap:10px;margin-top:10px}
+    input,select{
+      width:100%;padding:12px 13px;border-radius:14px;color:var(--text);
+      background:#101019;border:1px solid var(--line);outline:none
+    }
+    input:focus,select:focus{border-color:rgba(159,120,255,.8);box-shadow:0 0 0 3px rgba(159,120,255,.12)}
+    .place-card{
+      min-height:160px;display:grid;place-items:center;text-align:center;padding:18px;border-radius:18px;
+      border:1px dashed rgba(159,120,255,.58);
+      background:linear-gradient(135deg,rgba(159,120,255,.11),rgba(255,122,188,.08))
     }
 
-    button, input, select, textarea {
-      font: inherit;
+    #scratchCard{
+      user-select:none;
+      min-height:190px;
+      transition:background .25s ease, transform .15s ease;
     }
+    #scratchCard:active{transform:scale(.99)}
 
-    button {
-      cursor: pointer;
-      border: 0;
+
+    .scratch-shell{
+      position:relative;
+      min-height:210px;
+      border-radius:20px;
+      overflow:hidden;
+      border:1px solid var(--line);
+      background:linear-gradient(135deg,rgba(74,212,127,.18),rgba(159,120,255,.16));
     }
-
-    .app {
-      width: min(100%, 760px);
-      margin: 0 auto;
-      padding: 18px 16px 30px;
+    .scratch-reveal{
+      position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:20px;
     }
+    .scratch-reveal h4{margin:0 0 6px;font-size:1.4rem}
+    .scratch-reveal p{margin:0;color:var(--muted)}
+    #scratchCanvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none}
 
-    .topbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 18px;
+    .place-card h4{margin:8px 0 4px;font-size:1.25rem}
+    .place-card p{margin:0;color:var(--muted)}
+    .stat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+    .stat-card{padding:15px;border-radius:17px;background:var(--panel2);border:1px solid var(--line)}
+    .stat-card span{display:block;color:var(--muted);font-size:.82rem}
+    .stat-card strong{display:block;font-size:1.35rem;margin-top:5px}
+    .chart-wrap{display:grid;grid-template-columns:150px 1fr;gap:20px;align-items:center}
+    .pie{
+      width:150px;height:150px;border-radius:50%;
+      background:conic-gradient(#9f78ff 0 16.6%,#ff7abc 16.6% 33.2%,#ffd166 33.2% 49.8%,#4ad47f 49.8% 66.4%,#57b8ff 66.4% 83%,#ff8f4d 83% 100%);
+      position:relative;margin:auto
     }
-
-    .brand h1 {
-      margin: 0;
-      font-size: clamp(1.45rem, 5vw, 2.15rem);
-      letter-spacing: -.04em;
+    .pie:after{content:"";position:absolute;inset:28px;border-radius:50%;background:var(--panel)}
+    .legend{display:grid;gap:8px}
+    .legend-row{display:flex;justify-content:space-between;gap:10px;font-size:.86rem}
+    .legend-row span:first-child{color:var(--muted)}
+    .history{display:grid;gap:9px}
+    .history-item{display:flex;justify-content:space-between;gap:12px;padding:12px;border-radius:15px;background:var(--panel2);border:1px solid var(--line)}
+    .history-item small{color:var(--muted)}
+    .bottom-nav{
+      position:fixed;left:50%;bottom:10px;transform:translateX(-50%);
+      width:min(calc(100% - 20px),730px);display:grid;grid-template-columns:repeat(4,1fr);gap:7px;
+      padding:9px;border-radius:22px;background:rgba(18,18,28,.91);backdrop-filter:blur(18px);
+      border:1px solid var(--line);box-shadow:var(--shadow);z-index:20;margin-bottom:env(safe-area-inset-bottom)
     }
-
-    .brand p {
-      margin: 4px 0 0;
-      color: var(--muted);
-      font-size: .92rem;
+    .nav-btn{background:none;color:var(--muted);padding:6px 2px;border-radius:14px;font-size:.7rem}
+    .nav-btn span{display:block;font-size:1.2rem;margin-bottom:2px}
+    .nav-btn.active{color:white;background:rgba(255,255,255,.06)}
+    .toast{
+      position:fixed;left:50%;bottom:96px;transform:translate(-50%,18px);
+      width:min(calc(100% - 32px),460px);padding:13px 15px;border-radius:16px;
+      background:#252538;border:1px solid var(--line);box-shadow:var(--shadow);
+      opacity:0;pointer-events:none;transition:.2s;z-index:30;text-align:center
     }
-
-    .score-pill {
-      min-width: 112px;
-      padding: 10px 14px;
-      border-radius: 18px;
-      background: linear-gradient(135deg, rgba(169,112,255,.24), rgba(255,121,198,.2));
-      border: 1px solid rgba(255,255,255,.1);
-      box-shadow: var(--shadow);
-      text-align: center;
+    .toast.show{opacity:1;transform:translate(-50%,0)}
+    @media(min-width:640px){
+      .habit-grid{grid-template-columns:repeat(3,1fr)}
+      .stat-grid{grid-template-columns:repeat(4,1fr)}
     }
-
-    .score-pill small {
-      display: block;
-      color: var(--muted);
-      margin-bottom: 2px;
-    }
-
-    .score-pill strong {
-      font-size: 1.35rem;
-      color: var(--gold);
-    }
-
-    .duo {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px;
-      margin-bottom: 16px;
-    }
-
-    .player {
-      position: relative;
-      overflow: hidden;
-      text-align: center;
-      padding: 16px;
-      border-radius: var(--radius);
-      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.025));
-      border: 1px solid var(--line);
-      box-shadow: var(--shadow);
-    }
-
-    .player img {
-      width: min(36vw, 150px);
-      height: min(36vw, 150px);
-      object-fit: contain;
-      display: block;
-      margin: 0 auto 8px;
-      filter: drop-shadow(0 10px 16px rgba(0,0,0,.35));
-    }
-
-    .player h2 {
-      margin: 0;
-      font-size: 1.15rem;
-    }
-
-    .player .emoji {
-      font-size: 1.35rem;
-      margin-top: 6px;
-    }
-
-    .section {
-      margin-top: 16px;
-      padding: 18px;
-      border-radius: var(--radius);
-      background: rgba(21,21,34,.92);
-      border: 1px solid var(--line);
-      box-shadow: var(--shadow);
-    }
-
-    .section-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      margin-bottom: 14px;
-    }
-
-    .section-header h3 {
-      margin: 0;
-      font-size: 1.08rem;
-    }
-
-    .section-header span {
-      color: var(--muted);
-      font-size: .88rem;
-    }
-
-    .progress-wrap {
-      background: #0f0f18;
-      border-radius: 999px;
-      height: 14px;
-      overflow: hidden;
-      border: 1px solid var(--line);
-    }
-
-    .progress-bar {
-      height: 100%;
-      width: 0%;
-      border-radius: inherit;
-      background: linear-gradient(90deg, var(--accent), var(--accent-2));
-      transition: width .25s ease;
-    }
-
-    .habit-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0,1fr));
-      gap: 10px;
-      margin-top: 14px;
-    }
-
-    .habit {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 13px;
-      border-radius: 16px;
-      background: var(--panel-2);
-      border: 1px solid var(--line);
-      color: var(--text);
-      text-align: left;
-      transition: transform .15s ease, border-color .15s ease, background .15s ease;
-    }
-
-    .habit:active { transform: scale(.98); }
-
-    .habit.done {
-      background: rgba(73,209,125,.12);
-      border-color: rgba(73,209,125,.45);
-    }
-
-    .habit .icon { font-size: 1.25rem; }
-
-    .habit .copy strong {
-      display: block;
-      font-size: .92rem;
-    }
-
-    .habit .copy small {
-      color: var(--muted);
-    }
-
-    .actions {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-
-    .btn {
-      padding: 13px 15px;
-      border-radius: 16px;
-      font-weight: 800;
-      color: white;
-      background: linear-gradient(135deg, var(--accent), #8158ef);
-      box-shadow: 0 8px 22px rgba(169,112,255,.22);
-    }
-
-    .btn.secondary {
-      background: var(--panel-2);
-      color: var(--text);
-      box-shadow: none;
-      border: 1px solid var(--line);
-    }
-
-    .btn.danger {
-      background: linear-gradient(135deg, #ff5d73, #d93b57);
-      box-shadow: 0 8px 22px rgba(255,93,115,.2);
-    }
-
-    .btn.full { width: 100%; }
-
-    .input-row {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 10px;
-      margin-top: 10px;
-    }
-
-    input, select, textarea {
-      width: 100%;
-      color: var(--text);
-      background: #10101a;
-      border: 1px solid var(--line);
-      border-radius: 14px;
-      padding: 12px 13px;
-      outline: none;
-    }
-
-    input:focus, select:focus, textarea:focus {
-      border-color: rgba(169,112,255,.8);
-      box-shadow: 0 0 0 3px rgba(169,112,255,.12);
-    }
-
-    .grocery-total {
-      display: flex;
-      align-items: end;
-      justify-content: space-between;
-      gap: 14px;
-      margin-bottom: 14px;
-    }
-
-    .grocery-total strong {
-      font-size: 1.8rem;
-    }
-
-    .grocery-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0,1fr));
-      gap: 10px;
-    }
-
-    .grocery-card {
-      padding: 14px;
-      border-radius: 16px;
-      background: var(--panel-2);
-      border: 1px solid var(--line);
-    }
-
-    .grocery-card .name {
-      color: var(--muted);
-      font-size: .86rem;
-    }
-
-    .grocery-card .amount {
-      font-size: 1.15rem;
-      font-weight: 800;
-      margin-top: 4px;
-    }
-
-    .place-card {
-      min-height: 170px;
-      display: grid;
-      place-items: center;
-      text-align: center;
-      padding: 18px;
-      border-radius: 18px;
-      border: 1px dashed rgba(169,112,255,.55);
-      background: linear-gradient(135deg, rgba(169,112,255,.12), rgba(255,121,198,.08));
-      margin-bottom: 12px;
-    }
-
-    .place-card .mystery {
-      font-size: 3rem;
-    }
-
-    .place-card h4 {
-      margin: 8px 0 4px;
-      font-size: 1.2rem;
-    }
-
-    .place-card p {
-      margin: 0;
-      color: var(--muted);
-    }
-
-    .log {
-      display: grid;
-      gap: 9px;
-      max-height: 230px;
-      overflow: auto;
-    }
-
-    .log-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      padding: 11px 12px;
-      border-radius: 14px;
-      background: var(--panel-2);
-      border: 1px solid var(--line);
-    }
-
-    .log-item small { color: var(--muted); }
-
-    .plus { color: var(--good); font-weight: 900; }
-    .minus { color: var(--bad); font-weight: 900; }
-
-    .bottom-nav {
-      position: fixed;
-      left: 50%;
-      bottom: 10px;
-      transform: translateX(-50%);
-      width: min(calc(100% - 20px), 730px);
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 8px;
-      padding: 10px;
-      border-radius: 22px;
-      background: rgba(18,18,28,.9);
-      backdrop-filter: blur(18px);
-      border: 1px solid var(--line);
-      box-shadow: var(--shadow);
-      z-index: 20;
-      margin-bottom: env(safe-area-inset-bottom);
-    }
-
-    .bottom-nav a {
-      color: var(--muted);
-      text-decoration: none;
-      text-align: center;
-      font-size: .76rem;
-      padding: 6px 4px;
-      border-radius: 14px;
-    }
-
-    .bottom-nav a span {
-      display: block;
-      font-size: 1.25rem;
-      margin-bottom: 2px;
-    }
-
-    .toast {
-      position: fixed;
-      left: 50%;
-      bottom: 92px;
-      transform: translate(-50%, 20px);
-      width: min(calc(100% - 32px), 460px);
-      padding: 13px 15px;
-      border-radius: 16px;
-      background: #25253a;
-      border: 1px solid var(--line);
-      box-shadow: var(--shadow);
-      opacity: 0;
-      pointer-events: none;
-      transition: .22s ease;
-      z-index: 30;
-      text-align: center;
-    }
-
-    .toast.show {
-      opacity: 1;
-      transform: translate(-50%, 0);
-    }
-
-    @media (min-width: 640px) {
-      .habit-grid { grid-template-columns: repeat(3, 1fr); }
-      .grocery-grid { grid-template-columns: repeat(3, 1fr); }
+    @media(max-width:480px){
+      .chart-wrap{grid-template-columns:1fr}
+      .legend{margin-top:4px}
     }
   </style>
 </head>
 <body>
   <main class="app">
-    <header class="topbar">
-      <div class="brand">
-        <h1>Two Player Mode 🎮</h1>
-        <p>Shared life. Shared quests. Shared score.</p>
-      </div>
-      <div class="score-pill">
-        <small>Masti Score</small>
-        <strong id="score">500</strong>
-      </div>
-    </header>
-
-    <section class="duo">
-      <article class="player">
-        <img src="m.png" alt="Manya sticker" onerror="this.style.opacity='.25';this.alt='Add m.png here';" />
-        <h2>Manya</h2>
-        <div class="emoji" id="manyaMood">😊</div>
-      </article>
-      <article class="player">
-        <img src="t.png" alt="Thanima sticker" onerror="this.style.opacity='.25';this.alt='Add t.png here';" />
-        <h2>Thanima</h2>
-        <div class="emoji" id="thanimaMood">🤩</div>
-      </article>
-    </section>
-
-    <section class="section" id="hard75">
-      <div class="section-header">
-        <h3>⚔️ 75 Hard — Shared Run</h3>
-        <span id="dayText">Day 1 of 75</span>
-      </div>
-      <div class="progress-wrap">
-        <div class="progress-bar" id="hardProgress"></div>
-      </div>
-
-      <div class="habit-grid" id="habitGrid">
-        <button class="habit" data-points="15"><span class="icon">💪</span><span class="copy"><strong>Workout 1</strong><small>+15 score</small></span></button>
-        <button class="habit" data-points="15"><span class="icon">🏃</span><span class="copy"><strong>Workout 2</strong><small>+15 score</small></span></button>
-        <button class="habit" data-points="10"><span class="icon">💧</span><span class="copy"><strong>Water</strong><small>+10 score</small></span></button>
-        <button class="habit" data-points="10"><span class="icon">📖</span><span class="copy"><strong>Read 10 Pages</strong><small>+10 score</small></span></button>
-        <button class="habit" data-points="15"><span class="icon">🥗</span><span class="copy"><strong>Follow Diet</strong><small>+15 score</small></span></button>
-        <button class="habit" data-points="10"><span class="icon">📸</span><span class="copy"><strong>Progress Photo</strong><small>+10 score</small></span></button>
-      </div>
-
-      <div class="actions" style="margin-top:12px;">
-        <button class="btn" id="finishDay">Complete Shared Day</button>
-        <button class="btn danger" id="smokingBtn">🚬 Smoking −20</button>
-      </div>
-    </section>
-
-    <section class="section" id="places">
-      <div class="section-header">
-        <h3>🗺️ Party of Two</h3>
-        <span id="placeCount">0 saved places</span>
-      </div>
-
-      <div class="place-card" id="placeReveal">
-        <div>
-          <div class="mystery">🎲</div>
-          <h4>Where are we going?</h4>
-          <p>Add places, then reveal one at random.</p>
+    <section id="home" class="view active">
+      <header class="topbar">
+        <div class="brand">
+          <h1>Two Player Mode</h1>
+          <p>Build the bar. Unlock a date.</p>
         </div>
+        <div class="mini-date" id="todayDate"></div>
+      </header>
+
+      <div class="duo">
+        <article class="player">
+          <img src="m.png" alt="Amelia Dhaniya sticker" onerror="this.style.opacity='.25'">
+          <h2>Amelia Dhaniya</h2>
+        </article>
+        <article class="player">
+          <img src="t.png" alt="Jo Rambutan sticker" onerror="this.style.opacity='.25'">
+          <h2>Jo Rambutan</h2>
+        </article>
       </div>
 
-      <div class="input-row">
-        <input id="placeInput" type="text" placeholder="Add a place to go..." />
-        <button class="btn" id="addPlace">Add</button>
-      </div>
-      <button class="btn full" id="revealPlace" style="margin-top:10px;">Reveal Side Quest ✨</button>
-    </section>
+      <section class="hero">
+        <div class="hero-label">Life Meter</div>
+        <div class="life-number"><span id="lifePoints">500</span><small> / 1000</small></div>
+        <div class="life-track"><div class="life-fill" id="lifeFill"></div></div>
+        <div class="life-caption"><span>Low</span><span id="lifeStatus">Doing good</span><span>Maxed</span></div>
 
-    <section class="section" id="grocery">
-      <div class="section-header">
-        <h3>🛒 Grocery Money Tracker</h3>
-        <span>This month</span>
-      </div>
-
-      <div class="grocery-total">
-        <div>
-          <div style="color:var(--muted);font-size:.88rem;">Total Spent</div>
-          <strong>₹<span id="groceryTotal">0</span></strong>
+        <div class="quick-controls">
+          <div>
+            <select id="plusAction" aria-label="Add points action">
+              <option value="20|Workout">Workout +20</option>
+              <option value="15|10k Steps">10k Steps +15</option>
+              <option value="10|Cooked at Home">Cooked at Home +10</option>
+              <option value="10|Read 10 Pages">Read 10 Pages +10</option>
+              <option value="10|Drank Enough Water">Water Goal +10</option>
+            </select>
+            <button class="quick-btn plus" id="quickPlus" style="width:100%;margin-top:8px">＋ Add</button>
+          </div>
+          <div>
+            <select id="minusAction" aria-label="Remove points action">
+              <option value="15|Ordered Instead of Cooking">Ordered Instead of Cooking −15</option>
+              <option value="20|Smoking">Smoking −20</option>
+              <option value="10|Skipped Workout">Skipped Workout −10</option>
+              <option value="10|Overspent">Overspent −10</option>
+              <option value="10|Late Night Junk Food">Late Night Junk Food −10</option>
+            </select>
+            <button class="quick-btn minus" id="quickMinus" style="width:100%;margin-top:8px">− Minus</button>
+          </div>
         </div>
-        <button class="btn secondary" id="resetGrocery">Reset</button>
-      </div>
+      </section>
+    </section>
+<section id="table2" class="view">
+      <header class="topbar">
+        <div class="brand"><h1>Table for 2</h1><p>Fill the Life Meter to unlock a date.</p></div>
+        <div class="mini-date" id="cardCount">0 cards</div>
+      </header>
 
-      <div class="grocery-grid" id="groceryGrid"></div>
+      <section class="section">
+        <div class="section-header"><h3>Date Card</h3><span id="unlockHint">Reach 1000 Life</span></div>
+        <div class="scratch-shell" id="scratchShell">
+          <div class="scratch-reveal">
+            <div>
+              <h4 id="scratchTitle">Locked</h4>
+              <p id="scratchText">Max the Life Meter to earn a Table for Two card.</p>
+            </div>
+          </div>
+          <canvas id="scratchCanvas"></canvas>
+        </div>
+        <button class="btn full" id="newScratch" style="margin-top:10px">Load Unlocked Card</button>
+      </section>
 
-      <div class="input-row" style="grid-template-columns:1fr 1fr;">
-        <select id="groceryCategory">
-          <option value="Vegetables">🥦 Vegetables</option>
-          <option value="Fruits">🍎 Fruits</option>
-          <option value="Eggs">🥚 Eggs</option>
-          <option value="Water">💧 Water</option>
-          <option value="Milk">🥛 Milk</option>
-          <option value="Masti">🍫 Masti</option>
-        </select>
-        <input id="groceryAmount" type="number" min="0" inputmode="decimal" placeholder="Amount ₹" />
-      </div>
-      <button class="btn full" id="addExpense" style="margin-top:10px;">Add Expense</button>
+      <section class="section">
+        <div class="section-header"><h3>Place List</h3><span id="placeCount">0 places</span></div>
+        <div class="input-row">
+          <input id="placeInput" placeholder="Add a café, restaurant, trip..." />
+          <button class="btn" id="addPlace">Add</button>
+        </div>
+        <div class="history" id="placeList" style="margin-top:12px"></div>
+      </section>
+    </section>
+<section id="grocery" class="view">
+      <header class="topbar">
+        <div class="brand"><h1>Groceries</h1><p>Track every rupee.</p></div>
+        <div class="mini-date">This month</div>
+      </header>
+      <section class="section">
+        <div class="section-header"><h3>Total Spent</h3><span>₹<b id="groceryTotal">0</b></span></div>
+        <div class="input-row" style="grid-template-columns:1fr 1fr">
+          <select id="groceryCategory">
+            <option>Vegetables</option><option>Fruits</option><option>Eggs</option>
+            <option>Water</option><option>Milk</option><option>Masti</option>
+          </select>
+          <input id="groceryAmount" type="number" min="0" inputmode="decimal" placeholder="Amount ₹">
+        </div>
+        <button class="btn full" id="addExpense" style="margin-top:10px">Add Expense</button>
+      </section>
+      <section class="section">
+        <div class="history" id="groceryList"></div>
+      </section>
     </section>
 
-    <section class="section" id="activity">
-      <div class="section-header">
-        <h3>📜 Shared Activity</h3>
-        <span>Everything affects Masti</span>
-      </div>
-      <div class="log" id="activityLog"></div>
+    <section id="dashboard" class="view">
+      <header class="topbar">
+        <div class="brand"><h1>Dashboard</h1><p>Your progress at a glance.</p></div>
+        <div class="mini-date">Analytics</div>
+      </header>
+
+      <section class="section">
+        <div class="stat-grid">
+          <div class="stat-card"><span>Life</span><strong id="dashLife">500</strong></div>
+          <div class="stat-card"><span>Saved Places</span><strong id="dashSaved">0</strong></div>
+          <div class="stat-card"><span>Places Visited</span><strong id="dashVisited">0</strong></div>
+          <div class="stat-card"><span>Monthly Spend</span><strong>₹<span id="dashSpend">0</span></strong></div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-header"><h3>Monthly Grocery Split</h3><span>Pie chart</span></div>
+        <div class="chart-wrap">
+          <div class="pie" id="pieChart"></div>
+          <div class="legend" id="pieLegend"></div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-header"><h3>Date Cards</h3><span>Unlocked and completed</span></div>
+        <div class="stat-grid">
+          <div class="stat-card"><span>Available Cards</span><strong id="dashCards">0</strong></div>
+          <div class="stat-card"><span>Dates Completed</span><strong id="dashDates">0</strong></div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-header"><h3>Minus Log</h3><span>Recent deductions</span></div>
+        <div class="history" id="minusList"></div>
+      </section>
+
+      <section class="section">
+        <div class="section-header"><h3>Recent Activity</h3><span>Latest</span></div>
+        <div class="history" id="activityList"></div>
+      </section>
     </section>
   </main>
 
   <nav class="bottom-nav">
-    <a href="#hard75"><span>⚔️</span>75 Hard</a>
-    <a href="#places"><span>🗺️</span>Places</a>
-    <a href="#grocery"><span>🛒</span>Grocery</a>
-    <a href="#activity"><span>📜</span>Activity</a>
+    <button class="nav-btn active" data-view="home"><span>⌂</span>Home</button>
+        <button class="nav-btn" data-view="table2"><span>⌖</span>Table for 2</button>
+    <button class="nav-btn" data-view="grocery"><span>₹</span>Groceries</button>
+    <button class="nav-btn" data-view="dashboard"><span>◔</span>Dashboard</button>
   </nav>
 
   <div class="toast" id="toast"></div>
 
-  <script>
-    const defaultState = {
-      score: 500,
-      day: 1,
-      habits: [false, false, false, false, false, false],
-      places: [],
-      groceries: {
-        Vegetables: 0,
-        Fruits: 0,
-        Eggs: 0,
-        Water: 0,
-        Milk: 0,
-        Masti: 0
-      },
-      activity: [
-        { text: "Two Player Mode started", value: 0, time: "Now" }
-      ]
-    };
+<script>
+const defaults={
+  life:500,places:[],visited:[],cards:0,currentReveal:null,minusLog:[],
+  groceries:{Vegetables:0,Fruits:0,Eggs:0,Water:0,Milk:0,Masti:0},
+  activity:[{text:"Two Player Mode started",value:0,time:"Now"}]
+};
+let state=JSON.parse(localStorage.getItem("twoPlayerModeV2"))||defaults;
+const $=id=>document.getElementById(id);
+const colors={Vegetables:"#9f78ff",Fruits:"#ff7abc",Eggs:"#ffd166",Water:"#4ad47f",Milk:"#57b8ff",Masti:"#ff8f4d"};
 
-    let state = JSON.parse(localStorage.getItem("twoPlayerModeState")) || defaultState;
+function save(){localStorage.setItem("twoPlayerModeV2",JSON.stringify(state))}
+function toast(msg){$("toast").textContent=msg;$("toast").classList.add("show");setTimeout(()=>$("toast").classList.remove("show"),1700)}
+function log(text,value=0){
+  state.activity.unshift({text,value,time:new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"})});
+  state.activity=state.activity.slice(0,25);
+}
+function changeLife(amount,reason){
+  const before=state.life;
+  state.life=Math.max(0,state.life+amount);
 
-    const scoreEl = document.getElementById("score");
-    const dayText = document.getElementById("dayText");
-    const hardProgress = document.getElementById("hardProgress");
-    const habitButtons = [...document.querySelectorAll(".habit")];
-    const placeInput = document.getElementById("placeInput");
-    const placeCount = document.getElementById("placeCount");
-    const placeReveal = document.getElementById("placeReveal");
-    const groceryGrid = document.getElementById("groceryGrid");
-    const groceryTotal = document.getElementById("groceryTotal");
-    const activityLog = document.getElementById("activityLog");
-    const toast = document.getElementById("toast");
+  if(state.life>=1000){
+    state.cards=(state.cards||0)+1;
+    state.life=0;
+    state.currentReveal=null;
+    log("Table for Two card unlocked",0);
+    toast("Table for Two unlocked!");
+  } else {
+    toast(`${amount>0?"+":""}${amount} life`);
+  }
 
-    const groceryEmoji = {
-      Vegetables: "🥦",
-      Fruits: "🍎",
-      Eggs: "🥚",
-      Water: "💧",
-      Milk: "🥛",
-      Masti: "🍫"
-    };
+  log(reason,amount);
+  render();
+}
+function lifeStatus(){
+  if(state.life>=800)return"Almost unlocked";
+  if(state.life>=600)return"Thriving";
+  if(state.life>=400)return"Doing good";
+  if(state.life>=200)return"Needs a boost";
+  return"Critical";
+}
+function renderGrocery(){
+  const total=Object.values(state.groceries).reduce((a,b)=>a+Number(b),0);
+  $("groceryTotal").textContent=total.toFixed(0);
+  $("dashSpend").textContent=total.toFixed(0);
+  $("groceryList").innerHTML=Object.entries(state.groceries).map(([k,v])=>`
+    <div class="history-item"><span>${k}</span><strong>₹${Number(v).toFixed(0)}</strong></div>`).join("");
+  const vals=Object.entries(state.groceries), sum=total||1;
+  let start=0,segments=[];
+  vals.forEach(([k,v])=>{const end=start+(v/sum*100);segments.push(`${colors[k]} ${start}% ${end}%`);start=end});
+  $("pieChart").style.background=total?`conic-gradient(${segments.join(",")})`:"conic-gradient(#2a2a38 0 100%)";
+  $("pieLegend").innerHTML=vals.map(([k,v])=>`
+    <div class="legend-row"><span>${k}</span><strong>₹${Number(v).toFixed(0)}</strong></div>`).join("");
+}
+function renderPlaces(){
+  $("placeCount").textContent=`${state.places.length} place${state.places.length===1?"":"s"}`;
+  $("dashSaved").textContent=state.places.length;
+  $("dashVisited").textContent=state.visited.length;
+  $("placeList").innerHTML=state.places.length?state.places.map((name,i)=>`
+    <label class="history-item" style="align-items:center">
+      <span>${name}</span>
+      <input type="checkbox" data-place-index="${i}" style="width:22px;height:22px">
+    </label>`).join(""):`<div class="history-item"><span>No places added yet</span></div>`;
+  document.querySelectorAll("[data-place-index]").forEach(cb=>cb.onchange=()=>{
+    const i=Number(cb.dataset.placeIndex),name=state.places.splice(i,1)[0];
+    state.visited.unshift({name,date:new Date().toLocaleDateString()});
+    changeLife(25,`Completed date: ${name}`);
+  });
+}
+function renderActivity(){
+  $("activityList").innerHTML=state.activity.slice(0,8).map(x=>`
+    <div class="history-item"><div><strong>${x.text}</strong><br><small>${x.time}</small></div>
+    <strong style="color:${x.value>0?'var(--good)':x.value<0?'var(--bad)':'var(--muted)'}">${x.value?`${x.value>0?'+':''}${x.value}`:'—'}</strong></div>`).join("");
+}
+function renderDashboardExtras(){
+  state.minusLog=state.minusLog||[];
+  $("dashCards").textContent=state.cards||0;
+  $("dashDates").textContent=state.visited.length;
+  $("minusList").innerHTML=state.minusLog.length?state.minusLog.slice(0,8).map(x=>`
+    <div class="history-item"><div><strong>${x.text}</strong><br><small>${x.time}</small></div>
+    <strong style="color:var(--bad)">${x.value}</strong></div>`).join("")
+    :`<div class="history-item"><span>No deductions yet</span><small>Nice</small></div>`;
+}
 
-    function save() {
-      localStorage.setItem("twoPlayerModeState", JSON.stringify(state));
-    }
+function render(){
+  state.cards=state.cards||0;
+  $("lifePoints").textContent=state.life;
+  $("lifeFill").style.width=`${state.life/10}%`;
+  $("lifeStatus").textContent=lifeStatus();
+  $("placeCount").textContent=`${state.places.length} saved`;
+  $("cardCount").textContent=`${state.cards} card${state.cards===1?"":"s"}`;
+  $("unlockHint").textContent=state.cards>0?"Ready to scratch":`${1000-state.life} Life to unlock`;
+  $("dashLife").textContent=state.life;
 
-    function showToast(message) {
-      toast.textContent = message;
-      toast.classList.add("show");
-      setTimeout(() => toast.classList.remove("show"), 1900);
-    }
+  if(state.currentReveal){
+    $("scratchTitle").textContent=state.currentReveal;
+    $("scratchText").textContent="Scratch away the grey layer to reveal.";
+  } else if(state.cards>0){
+    $("scratchTitle").textContent="Card Ready";
+    $("scratchText").textContent="Tap Load Unlocked Card, then scratch.";
+  } else {
+    $("scratchTitle").textContent="Locked";
+    $("scratchText").textContent="Max the Life Meter to earn a Table for Two card.";
+  }
+  renderGrocery();renderPlaces();renderDashboardExtras();renderActivity();save();
+}
+document.querySelectorAll(".nav-btn").forEach(btn=>btn.onclick=()=>{
+  document.querySelectorAll(".nav-btn").forEach(x=>x.classList.remove("active"));
+  document.querySelectorAll(".view").forEach(x=>x.classList.remove("active"));
+  btn.classList.add("active");$(btn.dataset.view).classList.add("active");window.scrollTo({top:0,behavior:"smooth"});
+});
+$("quickPlus").onclick=()=>{
+  const [points,label]=$("plusAction").value.split("|");
+  changeLife(Number(points),label);
+};
+$("quickMinus").onclick=()=>{
+  const [points,label]=$("minusAction").value.split("|");
+  state.minusLog=state.minusLog||[];
+  state.minusLog.unshift({text:label,value:-Number(points),time:new Date().toLocaleString()});
+  state.minusLog=state.minusLog.slice(0,20);
+  changeLife(-Number(points),label);
+};
+$("addPlace").onclick=()=>{
+  const v=$("placeInput").value.trim();if(!v)return toast("Add a place first");
+  state.places.push(v);$("placeInput").value="";log(`Saved place: ${v}`);render();toast("Place saved");
+};
 
-    function addActivity(text, value = 0) {
-      state.activity.unshift({
-        text,
-        value,
-        time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
-      });
-      state.activity = state.activity.slice(0, 30);
-    }
+const canvas=$("scratchCanvas"),ctx=canvas.getContext("2d");
+let scratching=false,lastX=0,lastY=0;
 
-    function changeScore(amount, reason) {
-      state.score = Math.max(0, state.score + amount);
-      addActivity(reason, amount);
-      showToast(`${amount > 0 ? "+" : ""}${amount} Masti — ${reason}`);
-    }
+function sizeScratch(){
+  const rect=$("scratchShell").getBoundingClientRect();
+  canvas.width=Math.max(1,Math.floor(rect.width*devicePixelRatio));
+  canvas.height=Math.max(1,Math.floor(rect.height*devicePixelRatio));
+  ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
+  drawScratchCover();
+}
+function drawScratchCover(){
+  const w=canvas.width/devicePixelRatio,h=canvas.height/devicePixelRatio;
+  ctx.globalCompositeOperation="source-over";
+  ctx.fillStyle="#777";
+  ctx.fillRect(0,0,w,h);
+  ctx.fillStyle="#8d8d8d";
+  for(let x=-h;x<w+h;x+=24){ctx.fillRect(x,0,12,h)}
+  ctx.fillStyle="#f3f3f3";
+  ctx.font="800 20px system-ui";
+  ctx.textAlign="center";
+  ctx.fillText((state.cards||0)>0||state.currentReveal?"SCRATCH HERE":"LOCKED",w/2,h/2);
+}
+function point(e){
+  const r=canvas.getBoundingClientRect(),p=e.touches?e.touches[0]:e;
+  return {x:p.clientX-r.left,y:p.clientY-r.top};
+}
+function scratchAt(x,y){
+  ctx.globalCompositeOperation="destination-out";
+  ctx.beginPath();ctx.arc(x,y,24,0,Math.PI*2);ctx.fill();
+}
+canvas.addEventListener("pointerdown",e=>{if(!state.currentReveal)return;scratching=true;const p=point(e);lastX=p.x;lastY=p.y;scratchAt(p.x,p.y)});
+canvas.addEventListener("pointermove",e=>{if(!scratching||!state.currentReveal)return;const p=point(e);ctx.globalCompositeOperation="destination-out";ctx.lineWidth=48;ctx.lineCap="round";ctx.beginPath();ctx.moveTo(lastX,lastY);ctx.lineTo(p.x,p.y);ctx.stroke();lastX=p.x;lastY=p.y});
+window.addEventListener("pointerup",()=>scratching=false);
 
-    function renderHabits() {
-      habitButtons.forEach((btn, index) => {
-        btn.classList.toggle("done", !!state.habits[index]);
-      });
-    }
+$("newScratch").onclick=()=>{
+  if(state.currentReveal){toast("Scratch the current card");return}
+  if((state.cards||0)<1)return toast("Fill the Life Meter first");
+  if(!state.places.length)return toast("Add at least one place");
+  const i=Math.floor(Math.random()*state.places.length);
+  state.currentReveal=state.places[i];
+  state.cards--;
+  $("scratchTitle").textContent=state.currentReveal;
+  $("scratchText").textContent="Scratch away the grey layer to reveal.";
+  drawScratchCover();
+  log(`Date card loaded`);
+  render();
+};
 
-    function renderGroceries() {
-      groceryGrid.innerHTML = "";
-      let total = 0;
-
-      Object.entries(state.groceries).forEach(([name, amount]) => {
-        total += Number(amount);
-        groceryGrid.insertAdjacentHTML("beforeend", `
-          <div class="grocery-card">
-            <div class="name">${groceryEmoji[name]} ${name}</div>
-            <div class="amount">₹${Number(amount).toFixed(0)}</div>
-          </div>
-        `);
-      });
-
-      groceryTotal.textContent = total.toFixed(0);
-    }
-
-    function renderActivity() {
-      activityLog.innerHTML = state.activity.map(item => `
-        <div class="log-item">
-          <div>
-            <strong>${item.text}</strong><br>
-            <small>${item.time}</small>
-          </div>
-          <div class="${item.value > 0 ? "plus" : item.value < 0 ? "minus" : ""}">
-            ${item.value === 0 ? "🎮" : `${item.value > 0 ? "+" : ""}${item.value}`}
-          </div>
-        </div>
-      `).join("");
-    }
-
-    function render() {
-      scoreEl.textContent = state.score;
-      dayText.textContent = `Day ${state.day} of 75`;
-      hardProgress.style.width = `${Math.min(100, (state.day - 1) / 75 * 100)}%`;
-      placeCount.textContent = `${state.places.length} saved place${state.places.length === 1 ? "" : "s"}`;
-      renderHabits();
-      renderGroceries();
-      renderActivity();
-      save();
-    }
-
-    habitButtons.forEach((btn, index) => {
-      btn.addEventListener("click", () => {
-        const points = Number(btn.dataset.points);
-
-        if (!state.habits[index]) {
-          state.habits[index] = true;
-          changeScore(points, btn.querySelector("strong").textContent + " completed");
-        } else {
-          state.habits[index] = false;
-          changeScore(-points, btn.querySelector("strong").textContent + " unchecked");
-        }
-
-        render();
-      });
-    });
-
-    document.getElementById("finishDay").addEventListener("click", () => {
-      if (!state.habits.every(Boolean)) {
-        showToast("Complete all six shared tasks first");
-        return;
-      }
-
-      if (state.day < 75) {
-        changeScore(25, `Shared Day ${state.day} cleared`);
-        state.day += 1;
-        state.habits = state.habits.map(() => false);
-        render();
-      } else {
-        showToast("75 Hard completed 🏆");
-      }
-    });
-
-    document.getElementById("smokingBtn").addEventListener("click", () => {
-      changeScore(-20, "Smoking debuff 🚬");
-      document.getElementById("manyaMood").textContent = "😵";
-      document.getElementById("thanimaMood").textContent = "🥲";
-      render();
-    });
-
-    document.getElementById("addPlace").addEventListener("click", () => {
-      const place = placeInput.value.trim();
-      if (!place) return showToast("Enter a place first");
-
-      state.places.push(place);
-      placeInput.value = "";
-      addActivity(`Added place: ${place}`, 0);
-      showToast("Place added");
-      render();
-    });
-
-    placeInput.addEventListener("keydown", e => {
-      if (e.key === "Enter") document.getElementById("addPlace").click();
-    });
-
-    document.getElementById("revealPlace").addEventListener("click", () => {
-      if (!state.places.length) return showToast("Add at least one place first");
-
-      const index = Math.floor(Math.random() * state.places.length);
-      const selected = state.places.splice(index, 1)[0];
-
-      placeReveal.innerHTML = `
-        <div>
-          <div class="mystery">✨</div>
-          <h4>${selected}</h4>
-          <p>Side quest unlocked for Manya & Thanima.</p>
-        </div>
-      `;
-
-      changeScore(10, `Revealed side quest: ${selected}`);
-      render();
-    });
-
-    document.getElementById("addExpense").addEventListener("click", () => {
-      const category = document.getElementById("groceryCategory").value;
-      const amountInput = document.getElementById("groceryAmount");
-      const amount = Number(amountInput.value);
-
-      if (!amount || amount <= 0) return showToast("Enter a valid amount");
-
-      state.groceries[category] += amount;
-      addActivity(`${category} expense ₹${amount.toFixed(0)}`, 0);
-      amountInput.value = "";
-      showToast("Expense added");
-      render();
-    });
-
-    document.getElementById("resetGrocery").addEventListener("click", () => {
-      if (!confirm("Reset all grocery spending?")) return;
-
-      Object.keys(state.groceries).forEach(key => state.groceries[key] = 0);
-      addActivity("Grocery tracker reset", 0);
-      render();
-    });
-
-    render();
-  </script>
+window.addEventListener("resize",sizeScratch);
+setTimeout(sizeScratch,0);
+$("addExpense").onclick=()=>{
+  const c=$("groceryCategory").value,a=Number($("groceryAmount").value);
+  if(!a||a<=0)return toast("Enter a valid amount");
+  state.groceries[c]+=a;$("groceryAmount").value="";log(`${c} expense ₹${a.toFixed(0)}`);render();toast("Expense added");
+};
+$("todayDate").textContent=new Date().toLocaleDateString([],{weekday:"short",month:"short",day:"numeric"});
+render();
+</script>
 </body>
 </html>
