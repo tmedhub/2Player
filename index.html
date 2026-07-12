@@ -37,12 +37,12 @@
     }
     button,input,select{font:inherit}
     button{cursor:pointer;border:0}
-    .app{width:min(100%,760px);margin:auto;padding:18px 16px 30px}
+    .app{width:min(100%,820px);margin:auto;padding:20px 16px 34px}
     .view{display:none}
     .view.active{display:block}
     .topbar{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:18px}
     .brand h1{margin:0;font-size:clamp(1.5rem,5vw,2.2rem);letter-spacing:-.04em}
-    .brand p{margin:5px 0 0;color:var(--muted);font-size:.92rem}
+    .brand p{margin:5px 0 0;color:var(--muted);font-size:1rem}
     .mini-date{color:var(--muted);font-size:.85rem;text-align:right}
     .duo{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px}
     .player{
@@ -54,7 +54,7 @@
       width:min(35vw,145px);height:min(35vw,145px);object-fit:contain;display:block;margin:0 auto 8px;
       filter:drop-shadow(0 12px 18px rgba(0,0,0,.35))
     }
-    .player h2{margin:0;font-size:1.08rem}
+    .player h2{margin:0;font-size:1.18rem}
     .hero,.section{
       border-radius:var(--radius);background:rgba(21,21,32,.94);
       border:1px solid var(--line);box-shadow:var(--shadow)
@@ -73,9 +73,9 @@
     }
     .quick-btn.plus{background:linear-gradient(135deg,#2eae66,#4ad47f);box-shadow:0 10px 25px rgba(74,212,127,.18)}
     .quick-btn.minus{background:linear-gradient(135deg,#d53b56,#ff6378);box-shadow:0 10px 25px rgba(255,99,120,.18)}
-    .section{padding:18px;margin-top:16px}
+    .section{padding:20px;margin-top:16px}
     .section-header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
-    .section-header h3{margin:0;font-size:1.08rem}
+    .section-header h3{margin:0;font-size:1.18rem}
     .section-header span{color:var(--muted);font-size:.86rem}
     .habit-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
     .habit{
@@ -83,7 +83,7 @@
       color:var(--text);text-align:left
     }
     .habit.done{background:rgba(74,212,127,.12);border-color:rgba(74,212,127,.46)}
-    .habit strong{display:block;font-size:.92rem}
+    .habit strong{display:block;font-size:1rem}
     .habit small{color:var(--muted)}
     .btn{
       padding:13px 15px;border-radius:16px;font-weight:850;color:white;
@@ -153,8 +153,8 @@
       padding:9px;border-radius:22px;background:rgba(18,18,28,.91);backdrop-filter:blur(18px);
       border:1px solid var(--line);box-shadow:var(--shadow);z-index:20;margin-bottom:env(safe-area-inset-bottom)
     }
-    .nav-btn{background:none;color:var(--muted);padding:6px 2px;border-radius:14px;font-size:.7rem}
-    .nav-btn span{display:block;font-size:1.2rem;margin-bottom:2px}
+    .nav-btn{background:none;color:var(--muted);padding:8px 3px;border-radius:14px;font-size:.76rem}
+    .nav-btn span{display:block;font-size:1.5rem;margin-bottom:3px}
     .nav-btn.active{color:white;background:rgba(255,255,255,.06)}
     .toast{
       position:fixed;left:50%;bottom:96px;transform:translate(-50%,18px);
@@ -163,6 +163,74 @@
       opacity:0;pointer-events:none;transition:.2s;z-index:30;text-align:center
     }
     .toast.show{opacity:1;transform:translate(-50%,0)}
+
+    .eyebrow{
+      display:block;color:var(--muted);font-size:.82rem;
+      text-transform:uppercase;letter-spacing:.12em;margin-bottom:6px
+    }
+    .grocery-hero{
+      display:flex;justify-content:space-between;align-items:center;gap:20px
+    }
+    .big-money{display:block;font-size:clamp(2.4rem,12vw,4rem);line-height:1;margin:8px 0}
+    .grocery-hero small{color:var(--muted)}
+    .budget-ring{
+      width:120px;height:120px;border-radius:50%;display:grid;place-items:center;
+      background:conic-gradient(var(--accent) 0%,#252533 0);
+      flex:0 0 auto
+    }
+    .budget-ring>div{
+      width:88px;height:88px;border-radius:50%;background:var(--panel);
+      display:grid;place-items:center;text-align:center
+    }
+    .budget-ring span{display:block;font-weight:900;font-size:1.35rem}
+    .budget-ring small{display:block;color:var(--muted);font-size:.72rem}
+    .grocery-cards{
+      display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px
+    }
+    .grocery-category{
+      padding:15px;border-radius:18px;background:var(--panel2);border:1px solid var(--line)
+    }
+    .grocery-category .top{
+      display:flex;justify-content:space-between;gap:8px;align-items:center
+    }
+    .grocery-category strong{font-size:1.08rem}
+    .grocery-category small{display:block;color:var(--muted);margin-top:6px}
+    .mini-bar{
+      margin-top:10px;height:8px;border-radius:999px;background:#101018;overflow:hidden
+    }
+    .mini-bar>span{
+      display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,var(--accent),var(--accent2))
+    }
+    .calendar-legend{
+      display:flex;flex-wrap:wrap;gap:12px;color:var(--muted);font-size:.8rem;margin-bottom:14px
+    }
+    .dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px}
+    .dot.positive{background:var(--good)}
+    .dot.negative{background:var(--bad)}
+    .dot.mixed{background:var(--gold)}
+    .calendar-grid{
+      display:grid;grid-template-columns:repeat(7,1fr);gap:7px
+    }
+    .calendar-cell{
+      aspect-ratio:1;border-radius:12px;background:var(--panel2);border:1px solid var(--line);
+      display:flex;align-items:flex-start;justify-content:flex-end;padding:6px;font-size:.75rem;color:var(--muted);
+      position:relative;overflow:hidden
+    }
+    .calendar-cell.positive{background:rgba(74,212,127,.18);border-color:rgba(74,212,127,.38)}
+    .calendar-cell.negative{background:rgba(255,99,120,.18);border-color:rgba(255,99,120,.38)}
+    .calendar-cell.mixed{background:rgba(255,209,102,.18);border-color:rgba(255,209,102,.38)}
+    .calendar-cell.today{outline:2px solid var(--accent)}
+    .calendar-cell .mark{position:absolute;left:6px;bottom:4px;font-size:.72rem}
+    @media(max-width:560px){
+      .grocery-hero{align-items:flex-start}
+      .budget-ring{width:105px;height:105px}
+      .budget-ring>div{width:77px;height:77px}
+      .calendar-grid{gap:5px}
+      .calendar-cell{border-radius:9px;padding:4px;font-size:.68rem}
+      .section{padding:18px}
+      .player h2{font-size:1rem}
+    }
+
     @media(min-width:640px){
       .habit-grid{grid-template-columns:repeat(3,1fr)}
       .stat-grid{grid-template-columns:repeat(4,1fr)}
@@ -232,12 +300,12 @@
       </header>
 
       <section class="section">
-        <div class="section-header"><h3>Date Card</h3><span id="unlockHint">Reach 1000 Life</span></div>
+        <div class="section-header"><h3>Kithe?</h3><span id="unlockHint">Reach 1000 Life</span></div>
         <div class="scratch-shell" id="scratchShell">
           <div class="scratch-reveal">
             <div>
               <h4 id="scratchTitle">Locked</h4>
-              <p id="scratchText">Max the Life Meter to earn a Table for Two card.</p>
+              <p id="scratchText">Max the Life Meter to earn a Kithe? card.</p>
             </div>
           </div>
           <canvas id="scratchCanvas"></canvas>
@@ -256,11 +324,23 @@
     </section>
 <section id="grocery" class="view">
       <header class="topbar">
-        <div class="brand"><h1>Groceries</h1><p>Track every rupee.</p></div>
-        <div class="mini-date">This month</div>
+        <div class="brand"><h1>Groceries</h1><p>Plan, track, and understand every rupee.</p></div>
+        <div class="mini-date" id="groceryMonthLabel">This month</div>
       </header>
+
+      <section class="section grocery-hero">
+        <div>
+          <span class="eyebrow">Monthly Spend</span>
+          <strong class="big-money">₹<span id="groceryTotal">0</span></strong>
+          <small id="groceryInsight">No spending logged yet.</small>
+        </div>
+        <div class="budget-ring" id="budgetRing">
+          <div><span id="budgetPercent">0%</span><small>used</small></div>
+        </div>
+      </section>
+
       <section class="section">
-        <div class="section-header"><h3>Total Spent</h3><span>₹<b id="groceryTotal">0</b></span></div>
+        <div class="section-header"><h3>Add Expense</h3><span>Fast entry</span></div>
         <div class="input-row" style="grid-template-columns:1fr 1fr">
           <select id="groceryCategory">
             <option>Vegetables</option><option>Fruits</option><option>Eggs</option>
@@ -268,14 +348,24 @@
           </select>
           <input id="groceryAmount" type="number" min="0" inputmode="decimal" placeholder="Amount ₹">
         </div>
+        <div class="input-row" style="grid-template-columns:1fr 1fr">
+          <input id="groceryNote" placeholder="What did you buy?">
+          <input id="monthlyBudget" type="number" min="0" inputmode="decimal" placeholder="Monthly budget ₹">
+        </div>
         <button class="btn full" id="addExpense" style="margin-top:10px">Add Expense</button>
       </section>
+
       <section class="section">
-        <div class="history" id="groceryList"></div>
+        <div class="section-header"><h3>Category Breakdown</h3><span>Tap to review</span></div>
+        <div class="grocery-cards" id="groceryList"></div>
+      </section>
+
+      <section class="section">
+        <div class="section-header"><h3>Recent Purchases</h3><span>Latest entries</span></div>
+        <div class="history" id="purchaseList"></div>
       </section>
     </section>
-
-    <section id="dashboard" class="view">
+<section id="dashboard" class="view">
       <header class="topbar">
         <div class="brand"><h1>Dashboard</h1><p>Your progress at a glance.</p></div>
         <div class="mini-date">Analytics</div>
@@ -297,16 +387,7 @@
           <div class="legend" id="pieLegend"></div>
         </div>
       </section>
-
-      <section class="section">
-        <div class="section-header"><h3>Date Cards</h3><span>Unlocked and completed</span></div>
-        <div class="stat-grid">
-          <div class="stat-card"><span>Available Cards</span><strong id="dashCards">0</strong></div>
-          <div class="stat-card"><span>Dates Completed</span><strong id="dashDates">0</strong></div>
-        </div>
-      </section>
-
-      <section class="section">
+<section class="section">
         <div class="section-header"><h3>Minus Log</h3><span>Recent deductions</span></div>
         <div class="history" id="minusList"></div>
       </section>
@@ -330,7 +411,7 @@
 <script>
 const defaults={
   life:500,places:[],visited:[],cards:0,currentReveal:null,minusLog:[],
-  groceries:{Vegetables:0,Fruits:0,Eggs:0,Water:0,Milk:0,Masti:0},
+  groceries:{Vegetables:0,Fruits:0,Eggs:0,Water:0,Milk:0,Masti:0},purchases:[],monthlyBudget:0,
   activity:[{text:"Two Player Mode started",value:0,time:"Now"}]
 };
 let state=JSON.parse(localStorage.getItem("twoPlayerModeV2"))||defaults;
@@ -340,7 +421,12 @@ const colors={Vegetables:"#9f78ff",Fruits:"#ff7abc",Eggs:"#ffd166",Water:"#4ad47
 function save(){localStorage.setItem("twoPlayerModeV2",JSON.stringify(state))}
 function toast(msg){$("toast").textContent=msg;$("toast").classList.add("show");setTimeout(()=>$("toast").classList.remove("show"),1700)}
 function log(text,value=0){
-  state.activity.unshift({text,value,time:new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"})});
+  const now=new Date();
+  state.activity.unshift({
+    text,value,
+    time:now.toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"}),
+    dateKey:`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}-${String(now.getDate()).padStart(2,"0")}`
+  });
   state.activity=state.activity.slice(0,25);
 }
 function changeLife(amount,reason){
@@ -351,7 +437,7 @@ function changeLife(amount,reason){
     state.cards=(state.cards||0)+1;
     state.life=0;
     state.currentReveal=null;
-    log("Table for Two card unlocked",0);
+    log("Kithe? card unlocked",0);
     toast("Table for Two unlocked!");
   } else {
     toast(`${amount>0?"+":""}${amount} life`);
@@ -368,11 +454,35 @@ function lifeStatus(){
   return"Critical";
 }
 function renderGrocery(){
+  state.purchases=state.purchases||[];
+  state.monthlyBudget=Number(state.monthlyBudget||0);
   const total=Object.values(state.groceries).reduce((a,b)=>a+Number(b),0);
   $("groceryTotal").textContent=total.toFixed(0);
   $("dashSpend").textContent=total.toFixed(0);
+  $("monthlyBudget").value=state.monthlyBudget||"";
+  $("groceryMonthLabel").textContent=new Date().toLocaleDateString([],{month:"long",year:"numeric"});
+
+  const maxCategory=Math.max(1,...Object.values(state.groceries).map(Number));
   $("groceryList").innerHTML=Object.entries(state.groceries).map(([k,v])=>`
-    <div class="history-item"><span>${k}</span><strong>₹${Number(v).toFixed(0)}</strong></div>`).join("");
+    <div class="grocery-category">
+      <div class="top"><span>${k}</span><strong>₹${Number(v).toFixed(0)}</strong></div>
+      <small>${total?Math.round(v/total*100):0}% of this month</small>
+      <div class="mini-bar"><span style="width:${v/maxCategory*100}%"></span></div>
+    </div>`).join("");
+
+  const pct=state.monthlyBudget?Math.min(100,Math.round(total/state.monthlyBudget*100)):0;
+  $("budgetPercent").textContent=`${pct}%`;
+  $("budgetRing").style.background=`conic-gradient(var(--accent) ${pct}%,#252533 ${pct}% 100%)`;
+  $("groceryInsight").textContent=state.monthlyBudget
+    ? `₹${Math.max(0,state.monthlyBudget-total).toFixed(0)} left from ₹${state.monthlyBudget.toFixed(0)}`
+    : "Set a monthly budget to track what remains.";
+
+  $("purchaseList").innerHTML=state.purchases.length?state.purchases.slice(0,10).map(p=>`
+    <div class="history-item">
+      <div><strong>${p.note||p.category}</strong><br><small>${p.category} · ${p.time}</small></div>
+      <strong>₹${Number(p.amount).toFixed(0)}</strong>
+    </div>`).join(""):`<div class="history-item"><span>No purchases yet</span></div>`;
+
   const vals=Object.entries(state.groceries), sum=total||1;
   let start=0,segments=[];
   vals.forEach(([k,v])=>{const end=start+(v/sum*100);segments.push(`${colors[k]} ${start}% ${end}%`);start=end});
@@ -410,6 +520,42 @@ function renderDashboardExtras(){
     :`<div class="history-item"><span>No deductions yet</span><small>Nice</small></div>`;
 }
 
+
+function renderCalendar(){
+  const now=new Date(),year=now.getFullYear(),month=now.getMonth();
+  $("calendarMonth").textContent=now.toLocaleDateString([],{month:"long",year:"numeric"});
+  const first=new Date(year,month,1),days=new Date(year,month+1,0).getDate();
+  const start=(first.getDay()+6)%7;
+  const daily={};
+
+  (state.activity||[]).forEach(item=>{
+    if(!item.dateKey)return;
+    daily[item.dateKey]=daily[item.dateKey]||{pos:0,neg:0};
+    if(item.value>0)daily[item.dateKey].pos+=item.value;
+    if(item.value<0)daily[item.dateKey].neg+=Math.abs(item.value);
+  });
+
+  let cells="";
+  for(let i=0;i<start;i++)cells+=`<div class="calendar-cell" style="visibility:hidden"></div>`;
+  let positive=0,negative=0,current=0,best=0;
+  for(let d=1;d<=days;d++){
+    const key=`${year}-${String(month+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
+    const info=daily[key]||{pos:0,neg:0};
+    let cls="",mark="";
+    if(info.pos&&info.neg){cls="mixed";mark="+/−"}
+    else if(info.pos){cls="positive";mark="+";positive++;current++;best=Math.max(best,current)}
+    else if(info.neg){cls="negative";mark="−";negative++;current=0}
+    else current=0;
+    const today=d===now.getDate()?" today":"";
+    cells+=`<div class="calendar-cell ${cls}${today}">${d}<span class="mark">${mark}</span></div>`;
+  }
+  $("calendarGrid").innerHTML=cells;
+  $("positiveDays").textContent=positive;
+  $("negativeDays").textContent=negative;
+  $("positiveStreak").textContent=current;
+  $("bestStreak").textContent=best;
+}
+
 function render(){
   state.cards=state.cards||0;
   $("lifePoints").textContent=state.life;
@@ -428,9 +574,9 @@ function render(){
     $("scratchText").textContent="Tap Load Unlocked Card, then scratch.";
   } else {
     $("scratchTitle").textContent="Locked";
-    $("scratchText").textContent="Max the Life Meter to earn a Table for Two card.";
+    $("scratchText").textContent="Max the Life Meter to earn a Kithe? card.";
   }
-  renderGrocery();renderPlaces();renderDashboardExtras();renderActivity();save();
+  renderGrocery();renderPlaces();renderDashboardExtras();renderCalendar();renderActivity();save();
 }
 document.querySelectorAll(".nav-btn").forEach(btn=>btn.onclick=()=>{
   document.querySelectorAll(".nav-btn").forEach(x=>x.classList.remove("active"));
@@ -497,16 +643,28 @@ $("newScratch").onclick=()=>{
   $("scratchTitle").textContent=state.currentReveal;
   $("scratchText").textContent="Scratch away the grey layer to reveal.";
   drawScratchCover();
-  log(`Date card loaded`);
+  log(`Kithe? card loaded`);
   render();
 };
 
 window.addEventListener("resize",sizeScratch);
 setTimeout(sizeScratch,0);
 $("addExpense").onclick=()=>{
-  const c=$("groceryCategory").value,a=Number($("groceryAmount").value);
+  const c=$("groceryCategory").value;
+  const a=Number($("groceryAmount").value);
+  const note=$("groceryNote").value.trim();
+  const budget=Number($("monthlyBudget").value);
   if(!a||a<=0)return toast("Enter a valid amount");
-  state.groceries[c]+=a;$("groceryAmount").value="";log(`${c} expense ₹${a.toFixed(0)}`);render();toast("Expense added");
+  state.monthlyBudget=budget||state.monthlyBudget||0;
+  state.groceries[c]+=a;
+  state.purchases=state.purchases||[];
+  state.purchases.unshift({category:c,amount:a,note,time:new Date().toLocaleString()});
+  state.purchases=state.purchases.slice(0,40);
+  $("groceryAmount").value="";
+  $("groceryNote").value="";
+  log(`${c} expense ₹${a.toFixed(0)}`);
+  render();
+  toast("Expense added");
 };
 $("todayDate").textContent=new Date().toLocaleDateString([],{weekday:"short",month:"short",day:"numeric"});
 render();
