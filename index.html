@@ -471,12 +471,12 @@
 <script>
 const defaults={
   life:0,places:[],visited:[],cards:0,currentReveal:null,minusLog:[],workoutCounts:{},calendarOffset:0,lastActionSnapshot:null,
-  groceries:{Vegetables:0,Fruits:0,Eggs:0,Water:0,Milk:0,Masti:0},purchases:[],monthlyBudget:2000,
+  groceries:{Vegetables:0,Fruits:0,Eggs:0,Water:0,Milk:0,Bread:0,Masti:0},purchases:[],monthlyBudget:2000,
   activity:[{text:"Two Player Mode started",value:0,time:"Now"}]
 };
 let state=JSON.parse(localStorage.getItem("twoPlayerModeUndo2026"))||defaults;
 const $=id=>document.getElementById(id);
-const colors={Vegetables:"#9f78ff",Fruits:"#ff7abc",Eggs:"#ffd166",Water:"#4ad47f",Milk:"#57b8ff",Masti:"#ff8f4d"};
+const colors={Vegetables:"#9f78ff",Fruits:"#ff7abc",Eggs:"#ffd166",Water:"#4ad47f",Milk:"#57b8ff",Bread:"#ff00ff",Masti:"#ff8f4d"};
 
 function save(){localStorage.setItem("twoPlayerModeUndo2026",JSON.stringify(state))}
 function toast(msg){$("toast").textContent=msg;$("toast").classList.add("show");setTimeout(()=>$("toast").classList.remove("show"),1700)}
